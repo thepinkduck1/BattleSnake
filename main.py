@@ -12,6 +12,7 @@
 
 import random
 import typing
+from helper import moveHead
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -76,8 +77,14 @@ def move(game_state: typing.Dict) -> typing.Dict:
         is_move_safe["up"] = False
 
 
-    # TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-    # my_body = game_state['you']['body']
+    # Prevent Battlesnake from colliding with itself
+    my_body = game_state['you']['body']
+    for move, isSafe in is_move_safe.items():
+        if isSafe:
+            next_move_head = moveHead(move, my_head)
+            for body_cell in my_body:
+                if next_move_head == body_cell:
+                    is_move_safe[move] = False
 
     # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
     # opponents = game_state['board']['snakes']
