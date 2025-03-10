@@ -12,8 +12,7 @@
 
 import random
 import typing
-from helper import moveHead
-
+from helper import moveHead, a_star
 
 # info is called when you create your Battlesnake on play.battlesnake.com
 # and controls your Battlesnake's appearance
@@ -103,8 +102,40 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # Choose a random move from the safe ones
     next_move = random.choice(safe_moves)
 
-    # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-    # food = game_state['board']['food']
+    # Move towards food instead of random, to regain health and survive longer
+    food = game_state['board']['food']
+    start = (my_head["x"], my_head["y"])
+    goal_positions = []
+    obstacle_positions = []
+
+    for goal in food:
+        goal_pos = (goal["x"], goal["y"])
+        goal_positions.append(goal_pos)
+    
+    for obstacle in snakes:
+        for cell in obstacle["body"]:
+            obstacle_pos = (cell["x"], cell["y"])
+            obstacle_positions.append(obstacle_pos)
+        if obstacle["id"] != game_state["you"]["id"]:
+            head_pos = (obstacle["head"]["x"], obstacle["head"]["y"])
+            obstacle_positions.append(head_pos)
+    
+    next_position = a_star(start, goal_positions, obstacle_positions, board_width, board_height)
+
+    if next_position != None:
+        print(f"The next_position is {next_position.position}")
+        suggested_move = None
+        if next_position.position[0] == start[0] - 1:
+            suggested_move = "left"
+        elif next_position.position[0] == start[0] + 1:
+            suggested_move = "right"
+        elif next_position.position[1] == start[1] + 1:
+            suggested_move = "up"
+        elif next_position.position[1] == start[1] - 1:
+            suggested_move = "down"
+        print(f"The suggested move is {suggested_move}")
+        if suggested_move != None:
+            return {"move": suggested_move}
 
     print(f"MOVE {game_state['turn']}: {next_move}")
     return {"move": next_move}
