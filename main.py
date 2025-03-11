@@ -12,7 +12,7 @@
 
 import random
 import typing
-from helper import moveHead, a_star
+from helper import moveHead, a_star, flood_fill, find_flood_position, Node
 
 # info is called when you create your Battlesnake on play.battlesnake.com
 # and controls your Battlesnake's appearance
@@ -121,6 +121,17 @@ def move(game_state: typing.Dict) -> typing.Dict:
             obstacle_positions.append(head_pos)
     
     next_position = a_star(start, goal_positions, obstacle_positions, board_width, board_height)
+
+    # testing out flood fill
+    if next_position:
+        flood_test = flood_fill(next_position.position, obstacle_positions, board_width, board_height)
+        if (flood_test < len(game_state["you"]["body"])):
+            print("changing a star direction to flood fill")
+            flood_position = find_flood_position(start, obstacle_positions, board_width, board_height)
+            next_position = Node(flood_position, 0)
+    else:
+        flood_position = find_flood_position(start, obstacle_positions, board_width, board_height)
+        next_position = Node(flood_position, 0)
 
     if next_position != None:
         print(f"The next_position is {next_position.position}")

@@ -55,3 +55,42 @@ def a_star(start, goals, obstacles, grid_width, grid_height):
                 heapq.heappush(open_list, neighbour_node)
     
     return None
+
+def find_flood_position (start, obstacles, grid_width, grid_height):
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+    next_cells = []
+    results = {}
+
+    for direction in directions:
+        possible_next = (start[0] + direction[0], start[1] + direction[1])
+        if (0 <= possible_next[0] <= grid_width and 0 <= possible_next[1] <= grid_height and possible_next not in obstacles):
+            next_cells.append(possible_next)
+        for cell in next_cells:
+            size = flood_fill(cell, obstacles, grid_width, grid_height)
+            results[cell] = size
+    
+    return max(results, key=results.get)
+
+def flood_fill(start, obstacles, grid_width, grid_height):
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+    cell_queue = []
+    cell_queue.append(start)
+    
+    checked = []
+    
+    num = 0
+    while cell_queue:
+        n = cell_queue[0]
+        cell_queue.pop(0)
+        if (0 <= n[0] <= grid_width 
+            and 0 <= n[1] <= grid_height
+            and n not in obstacles
+            and n not in checked):
+            num += 1
+            for direction in directions:
+                new_cell = (n[0] + direction[0], n[1] + direction[1])
+                cell_queue.append(new_cell)
+        checked.append(n)
+    return num
